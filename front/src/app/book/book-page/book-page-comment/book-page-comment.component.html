@@ -1,0 +1,33 @@
+<div class="card card-body rounded-0 mb-2 fs-5" data-aos="zoom-in">
+	<div class="row">
+		<div class="col-12 col-lg mb-2">
+			<p class="m-0">{{ comment.date + ' | Оценка: ' + comment.score + ' | Клиент: ' + comment.ownerFio }}</p>
+		</div>
+		<div *ngIf="comment.ownerId === userid" class="col-12 col-lg-auto mb-2">
+			<a class="btn btn-warning rounded-0 w-100" data-bs-toggle="collapse" href="#collapseExample" role="button">
+				Обновить
+			</a>
+		</div>
+	</div>
+	<p class="m-0">{{ comment.text }}</p>
+</div>
+
+<div class="collapse" id="collapseExample">
+	<div class="card card-body rounded-0">
+		<form [formGroup]="commentFormGroup" (ngSubmit)="update()" class="row">
+			<div class="col-12">
+				<textarea formControlName="text" class="form-control rounded-0" minlength="1"
+						  maxlength="5000" placeholder="Комментарий"></textarea>
+			</div>
+			<div class="col-12 col-lg-6 mt-2">
+				<input type="number" formControlName="score" class="form-control rounded-0" min="1" step="1" max="10"
+					   placeholder="Оценка">
+			</div>
+			<div class="col-12 col-lg-6 mt-2">
+				<button type="submit" class="btn btn-warning w-100 rounded-0" [disabled]="commentFormGroup.invalid">
+					Обновить
+				</button>
+			</div>
+		</form>
+	</div>
+</div>

@@ -1,0 +1,111 @@
+<div class="container-fluid py-5">
+
+	<h1 class="text-center" data-aos="zoom-in">Репертуар библиотеки</h1>
+
+	<div *ngIf="role === 'MANAGER'" class="row d-flex justify-content-center mt-4" data-aos="zoom-in">
+		<div class="col-auto">
+			<a appNavigate [navigateURL]="'book_add'" class="btn btn-warning rounded-0">Добавить</a>
+		</div>
+	</div>
+
+</div>
+
+<div class="container">
+
+
+
+	<div class="card card-body rounded-0 mb-4" data-aos="zoom-in">
+		<div class="row">
+			<div class="col-12 col-lg-4 my-1">
+				<input type="text" [(ngModel)]="filterName" class="form-control rounded-0" minlength="1" maxlength="255" placeholder="Наименование">
+			</div>
+			<div class="col-12 col-lg-4 my-1">
+				<input type="text" [(ngModel)]="filterAuthor" class="form-control rounded-0" minlength="1" maxlength="255" placeholder="Автор">
+			</div>
+			<div class="col-12 col-lg-4 my-1">
+				<select [(ngModel)]="filterType" class="form-select rounded-0">
+					<option value="">Все типы</option>
+					<option *ngFor="let i of types | keyvalue" [value]="i.key" [label]="i.value"></option>
+				</select>
+			</div>
+			<div class="col-12 col-lg-4 my-1">
+				<select [(ngModel)]="filterSort" class="form-select rounded-0">
+					<option value="0">По умолчанию</option>
+					<option value="1">Цена по убыванию</option>
+					<option value="2">Цена по возрастанию</option>
+					<option value="3">Количество страниц по убыванию</option>
+					<option value="4">Количество страниц по возрастанию</option>
+				</select>
+			</div>
+			<div class="col-12 col-lg-4 my-1">
+				<select [(ngModel)]="filterCategoryId" class="form-select rounded-0">
+					<option value="0">Все жанры</option>
+					@for (i of categories;track i.id){
+						<option [value]="i.id" [label]="i.name"></option>
+					}
+				</select>
+			</div>
+			<div class="col-12 col-lg-4 my-1">
+				<select [(ngModel)]="filterAge" class="form-select rounded-0">
+					<option value="">Все возрастные категории</option>
+					<option *ngFor="let i of ages | keyvalue" [value]="i.key" [label]="i.value"></option>
+				</select>
+			</div>
+		</div>
+	</div>
+
+	<div class="row fs-5">
+		@for (i of paginatedItems; track i.id) {
+			<div class="col-12 col-lg-4 mb-4" data-aos="zoom-in">
+				<a appNavigate [navigateURL]="'book'" [queryParams]="{id:i.id}" role="button">
+					<div class="card card-body h-100 rounded-0">
+						<img [src]="i.img" alt="img" class="object-fit-cover w-100 mb-2" height="600">
+						<p class="fs-4 mb-2 text-center">{{ i.name }}</p>
+						<p class="m-0">
+							<span>Тип: </span>
+							<span class="text-warning">{{ i.typeName }}</span>
+						</p>
+						<p class="m-0">
+							<span>Автор: </span>
+							<span class="text-warning">{{ i.author }}</span>
+						</p>
+						<p class="m-0">
+							<span>Жанр: </span>
+							<span class="text-warning">{{ i.categoryName }}</span>
+						</p>
+						<p class="m-0">
+							<span>Количество страниц: </span>
+							<span class="text-warning">{{ i.page }}</span>
+						</p>
+						<p class="m-0">
+							<span>Возрастная категория: </span>
+							<span class="text-warning">{{ i.ageName }}</span>
+						</p>
+						<p class="m-0">
+							<span>Стоимость: </span>
+							<span class="text-warning">{{ i.price }}</span>
+						</p>
+					</div>
+				</a>
+			</div>
+		} @empty {
+			<div class="col-12" data-aos="zoom-in">
+				<p class="fs-1 text-center m-0">По вашему запросу ничего не найдено</p>
+			</div>
+		}
+	</div>
+
+	<div class="row" data-aos="zoom-in">
+		<div class="col-12 col-lg mt-2">
+		<button (click)="previousPage()" [disabled]="currentPage === 1" class="btn btn-warning rounded-0 w-100">Назад</button>
+		</div>
+		<div class="col-12 col-lg mt-2 d-flex align-items-center justify-content-center">
+		<p class="m-0 fs-5">Страница {{ currentPage }} из {{ totalPages }}</p>
+		</div>
+		<div class="col-12 col-lg mt-2">
+		<button (click)="nextPage()" [disabled]="currentPage === totalPages" class="btn btn-warning rounded-0 w-100">Вперед</button>
+		</div>
+	</div>
+
+</div>
+

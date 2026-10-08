@@ -1,0 +1,150 @@
+<div class="container-fluid py-5">
+
+	<h1 class="text-center" data-aos="zoom-in">Аналитика</h1>
+
+	<div class="row d-flex justify-content-center mt-4" data-aos="zoom-in">
+		<div class="col-auto">
+			<button class="btn btn-warning rounded-0" style="width: 120px;" (click)="downloadPDF()">Скачать</button>
+		</div>
+	</div>
+</div>
+
+<div class="container fs-4">
+
+	<div class="card card-body rounded-0 mb-4" data-aos="zoom-in">
+		<p class="mb-2">KPI за текущий месяц</p>
+		<app-stats-kpi></app-stats-kpi>
+		<div class="row d-flex justify-content-center mt-2 mb-3">
+			<div class="col-auto">
+				<button class="btn btn-warning rounded-0 me-3" style="width: 180px;" (click)="showNorms = !showNorms">
+					{{ showNorms ? 'Скрыть пояснения' : 'Больше о KPI' }}
+				</button>
+			</div>
+		</div>
+
+		<div *ngIf="showNorms" class="mt-3">
+			<div class="row g-3 text-center">
+
+				<div class="col-12 col-md-6">
+					<div class="card card-body rounded-0 h-100 p-3">
+						<p class="fw-semibold mb-2">Книг в фонде и библиотеке</p>
+						<ul class="list-unstyled mb-0 text-start ps-3" style="font-size: 0.95rem;">
+							<li><span style="color:#ff8080;">●</span> Менее 50: критически мало – срочно пополнить фонд, пересмотреть закупки и распределение книг.</li>
+							<li><span style="color:#b399ff;">●</span> 50–99: ниже среднего – добавить новые позиции для актуальности коллекции и удовлетворения читателей.</li>
+							<li><span style="color:#FFD700;">●</span> 100–199: нормальный уровень – фонд удовлетворяет потребности, но обновление приветствуется.</li>
+							<li><span style="color:#8CD93F;">●</span> 200 и более: отличный объем – фонд богатый, можно планировать новые мероприятия и продвижение.</li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="col-12 col-md-6">
+					<div class="card card-body rounded-0 h-100 p-3">
+						<p class="fw-semibold mb-2">Средняя оценка</p>
+						<ul class="list-unstyled mb-0 text-start ps-3" style="font-size: 0.95rem;">
+							<li><span style="color:#ff8080;">●</span> Менее 4: низкая оценка – читатели недовольны, пересмотреть ассортимент и качество обслуживания.</li>
+							<li><span style="color:#b399ff;">●</span> 4–5.9: средняя оценка – есть потенциал для улучшения, использовать обратную связь читателей.</li>
+							<li><span style="color:#FFD700;">●</span> 6–7.9: хорошая оценка – большинство читателей довольны, поддерживать текущий уровень качества.</li>
+							<li><span style="color:#8CD93F;">●</span> 8 и более: отличные отзывы – фонд высоко оценивают, использовать для продвижения библиотеки.</li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="col-12 col-md-6">
+					<div class="card card-body rounded-0 h-100 p-3">
+						<p class="fw-semibold mb-2">Заявки за месяц</p>
+						<ul class="list-unstyled mb-0 text-start ps-3" style="font-size: 0.95rem;">
+							<li><span style="color:#ff8080;">●</span> Менее 15: низкая активность – усилить продвижение и информирование читателей.</li>
+							<li><span style="color:#b399ff;">●</span> 15–29: средняя активность – есть потенциал для роста, рассмотреть акции и спецпредложения.</li>
+							<li><span style="color:#FFD700;">●</span> 30–59: хороший уровень – библиотека активно используется, поддерживать текущие меры.</li>
+							<li><span style="color:#8CD93F;">●</span> 60 и более: высокий спрос – высокий интерес читателей, планировать новые программы и закупки.</li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="col-12 col-md-6">
+					<div class="card card-body rounded-0 h-100 p-3">
+						<p class="fw-semibold mb-2">Доход за месяц (BYN)</p>
+						<ul class="list-unstyled mb-0 text-start ps-3" style="font-size: 0.95rem;">
+							<li><span style="color:#ff8080;">●</span> Менее 200: низкий доход – проанализировать причины, искать новые источники дохода.</li>
+							<li><span style="color:#b399ff;">●</span> 200–399: средний доход – стабильный, но можно увеличить за счет дополнительных услуг и акций.</li>
+							<li><span style="color:#FFD700;">●</span> 400–599: хороший доход – библиотека эффективно работает, продолжать текущую стратегию.</li>
+							<li><span style="color:#8CD93F;">●</span> 600 и более: отличный доход – высокая эффективность, использовать ресурсы для дальнейшего развития.</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="card card-body rounded-0 mb-4" data-aos="zoom-in">
+		<div class="row">
+			<div class="col-12 col-lg my-1">
+				<select [(ngModel)]="age" class="form-select rounded-0">
+					<option value="">Все возрастные категории</option>
+					<option *ngFor="let i of ages | keyvalue" [value]="i.key" [label]="i.value"></option>
+				</select>
+			</div>
+			<div class="col-12 col-lg my-1">
+				<select [(ngModel)]="categoryId" class="form-select rounded-0">
+					<option value="">Все жанры</option>
+					@for (i of categories; track i.id) {
+						<option [value]="i.id" [label]="i.name"></option>
+					}
+				</select>
+			</div>
+		</div>
+	</div>
+
+	<div class="card card-body rounded-0 mb-4" data-aos="zoom-in">
+		<p class="mb-2">Доля книг по возрастным категориям</p>
+		<app-stats-books-age [age]="age" [categoryId]="categoryId"></app-stats-books-age>
+	</div>
+
+	<div class="card card-body rounded-0 mb-4" data-aos="zoom-in">
+		<p class="mb-2">Топ-10 книг по заявкам</p>
+		<app-stats-books-orderings-size [age]="age" [categoryId]="categoryId" [colors]="colorsShuffle"></app-stats-books-orderings-size>
+	</div>
+
+	<div class="card card-body rounded-0 mb-4" data-aos="zoom-in">
+		<p class="mb-2">Топ-10 книг по наивысшим оценкам</p>
+		<app-stats-books-score-up [age]="age" [categoryId]="categoryId"></app-stats-books-score-up>
+	</div>
+
+	<div class="card card-body rounded-0 mb-4" data-aos="zoom-in">
+		<p class="mb-2">Топ-10 книг по наименьшим оценкам</p>
+		<app-stats-books-score-down [age]="age" [categoryId]="categoryId"></app-stats-books-score-down>
+	</div>
+
+	<hr>
+
+	<div class="card card-body rounded-0 mb-4" data-aos="zoom-in">
+		<p class="mb-2">Количество книг по жанрам</p>
+		<app-stats-books-categories-quantity [colors]="colorsShuffle"></app-stats-books-categories-quantity>
+	</div>
+
+	<div class="card card-body rounded-0 mb-4" data-aos="zoom-in">
+		<p class="mb-2">Количество заявок по статусам</p>
+		<app-stats-orderings-status></app-stats-orderings-status>
+	</div>
+
+	<div class="card card-body rounded-0 mb-4" data-aos="zoom-in">
+		<p class="mb-2">Топ-10 популярных книг</p>
+		<app-stats-books-count [colors]="colorsShuffle"></app-stats-books-count>
+	</div>
+
+	<div class="card card-body rounded-0 mb-4" data-aos="zoom-in">
+		<p class="mb-2">Динамика дохода по месяцам</p>
+		<app-stats-books-orderings-sum [colors]="colorsShuffle"></app-stats-books-orderings-sum>
+	</div>
+
+	<div class="card card-body rounded-0 mb-4" data-aos="zoom-in">
+		<p class="mb-2">Соотношение времени чтения и оценки книги</p>
+		<app-stats-books-ratio-time-score1 [colors]="colorsShuffle"></app-stats-books-ratio-time-score1>
+	</div>
+
+<!--	<div class="card card-body rounded-0 mb-4" data-aos="zoom-in">-->
+<!--		<p class="mb-2">Соотношение времени чтения и оценки книги</p>-->
+<!--		<app-stats-books-ratio-time-score2 [colors]="colorsShuffle"></app-stats-books-ratio-time-score2>-->
+<!--	</div>-->
+
+</div>

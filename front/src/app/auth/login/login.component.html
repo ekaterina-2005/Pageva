@@ -1,0 +1,21 @@
+<div class="container d-flex align-items-center" style="height: 500px">
+
+	<div class="w-100">
+
+		<h1 class="text-center mb-5" data-aos="zoom-in">Вход</h1>
+
+		<div class="row d-flex justify-content-center" data-aos="zoom-in">
+
+			<form (ngSubmit)="loginFormSubmit()" [formGroup]="loginForm" class="col-12 col-lg-6">
+
+				<input class="form-control rounded-0 mb-2" formControlName="username" placeholder="Логин" type="text">
+				<input class="form-control rounded-0 mb-2" formControlName="password" placeholder="Пароль" type="password">
+				<button class="btn btn-warning rounded-0 w-100" type="submit" [disabled]="loginForm.invalid">Вход</button>
+
+			</form>
+
+		</div>
+
+	</div>
+
+</div>

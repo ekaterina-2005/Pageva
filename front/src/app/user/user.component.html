@@ -1,0 +1,17 @@
+<div class="container-fluid py-5">
+
+	<h1 class="text-center" data-aos="zoom-in">Пользователи</h1>
+
+</div>
+
+<div class="container">
+
+	<h2 *ngIf="userClientCheck" class="text-center mb-4" data-aos="zoom-in">Нету клиентов</h2>
+
+	@for (i of getSortedUsers(); track i.id) {
+		<div *ngIf="i.id !== userid">
+			<app-user-card [user]="i"></app-user-card>
+		</div>
+	}
+
+</div>

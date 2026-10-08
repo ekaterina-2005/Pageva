@@ -1,0 +1,33 @@
+# ===== Frontend (Angular) =====
+front/node_modules/
+front/.angular/
+front/dist/
+front/out-tsc/
+front/coverage/
+front/npm-debug.log*
+front/yarn-error.log
+
+# ===== Backend (Spring Boot / Maven) =====
+back/target/
+back/*.iml
+back/HELP.md
+
+# Файлы, загруженные пользователями через приложение
+back/src/main/resources/img/book/*
+back/src/main/resources/img/user/*
+!back/src/main/resources/img/book/.gitkeep
+!back/src/main/resources/img/user/.gitkeep
+
+# ===== IDE =====
+.idea/
+**/.idea/
+*.iml
+.vscode/
+
+# ===== Система и прочее =====
+.DS_Store
+Thumbs.db
+*.log
+.env
+test/
+sql/

@@ -1,0 +1,40 @@
+<div class="row text-center">
+
+	<div class="col-lg-3 col-6 mb-4">
+		<div class="card card-body rounded-0" [ngStyle]="getBooksBg(booksTotal)">
+			<p class="text-muted mb-1">Книг в фонде</p>
+			<h2>{{ booksTotal }} шт.</h2>
+		</div>
+	</div>
+
+	<div class="col-lg-3 col-6 mb-4">
+		<div class="card card-body rounded-0" [ngStyle]="getBooksBg(booksTotalInLibrary)">
+			<p class="text-muted mb-1">Книг в библиотеке</p>
+			<h2>{{ booksTotalInLibrary }} шт.</h2>
+		</div>
+	</div>
+
+	<div class="col-lg-3 col-6 mb-4">
+		<div class="card card-body rounded-0" [ngStyle]="getAvgScoreBg(avgScore)">
+			<p class="text-muted mb-1">Средняя оценка</p>
+			<h2>{{ avgScore | number:'1.2-2' }} ★</h2>
+		</div>
+	</div>
+
+	<div class="col-lg-3 col-6 mb-4">
+		<div class="card card-body rounded-0" [ngStyle]="getOrdersBg(monthOrders)">
+			<p class="text-muted mb-1">Заявок за месяц</p>
+			<h2>{{ monthOrders }} шт.</h2>
+		</div>
+	</div>
+
+	<div class="col-lg-12 col-6 mb-4">
+		<div class="card card-body rounded-0" [ngStyle]="getIncomeBg(monthIncome)">
+			<p class="text-muted mb-1">Доход за месяц</p>
+			<h2>{{ monthIncome | currency:'BYN ':'symbol' }}</h2>
+		</div>
+	</div>
+
+</div>
+
+

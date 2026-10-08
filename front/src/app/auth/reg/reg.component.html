@@ -1,0 +1,26 @@
+<div class="container d-flex align-items-center" style="height: 500px">
+
+	<div class="w-100">
+
+		<h1 class="text-center mb-5" data-aos="zoom-in">Регистрация</h1>
+
+		<div class="row d-flex justify-content-center" data-aos="zoom-in">
+
+			<form (ngSubmit)="regFormSubmit()" [formGroup]="regForm" class="col-12 col-lg-6">
+
+				<input class="form-control rounded-0 mb-2" formControlName="username" placeholder="Логин" type="text">
+				<input class="form-control rounded-0 mb-2" formControlName="password" placeholder="Пароль" type="password">
+				<input class="form-control rounded-0 mb-2" formControlName="fio" placeholder="ФИО" type="text">
+				<input class="form-control rounded-0 mb-2" formControlName="email" placeholder="Почта" type="email">
+				<button class="btn btn-warning rounded-0 w-100" type="submit" [disabled]="regForm.invalid">Регистрация</button>
+				<hr>
+				<p class="m-0 text-warning">
+					{{'(Пароль должен содержать минимум 8 символов, одну строчную букву, одну цифру и один спецсимвол (!@#$%^&*()_+=.,|))'}}
+				</p>
+				<hr>
+			</form>
+		</div>
+
+	</div>
+
+</div>

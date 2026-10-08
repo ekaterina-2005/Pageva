@@ -1,0 +1,55 @@
+<div class="container-fluid py-5">
+
+	<h1 class="text-center" data-aos="zoom-in">{{ subscription.name }}</h1>
+
+	<div class="row d-flex justify-content-center mt-4" data-aos="zoom-in">
+		<div class="col-auto">
+			<a appNavigate [navigateURL]="'subscriptions'" class="btn btn-warning rounded-0">Назад</a>
+		</div>
+		<div *ngIf="role === 'ADMIN'" class="col-auto">
+			<a appNavigate [navigateURL]="'subscription_update'" [queryParams]="{id:subscription.id}"
+			   class="btn btn-warning w-100 rounded-0">Обновить</a>
+		</div>
+		<div *ngIf="role === 'ADMIN'" class="col-auto">
+			<button type="button" class="btn btn-primary w-100 rounded-0" (click)="delete()">Удалить</button>
+		</div>
+	</div>
+
+</div>
+
+<div class="container">
+
+	<div class="card card-body rounded-0" data-aos="zoom-in">
+
+		<form *ngIf="role == 'USER' && !subscriptionActive" [formGroup]="orderingFormGroup" (ngSubmit)="orderingSave()" class="row">
+			<div class="col-12 col-lg mb-2">
+				<p class="m-0">Карточка</p>
+				<input type="text" formControlName="card" class="form-control rounded-0" minlength="16" maxlength="16">
+			</div>
+			<div class="col-12 col-lg mb-2">
+				<p class="m-0">CVV</p>
+				<input type="password" formControlName="cvv" class="form-control rounded-0" minlength="3" maxlength="3">
+			</div>
+			<div class="col-12">
+				<button type="submit" class="btn btn-warning rounded-0 w-100" [disabled]="orderingFormGroup.invalid">Оформить</button>
+			</div>
+		</form>
+
+		<div class="row fs-4 text-center">
+			<div class="col-12 col-lg">
+				<p class="m-0">
+					<span>Длительность: </span>
+					<span class="text-warning">{{ subscription.duration + ' дн.' }}</span>
+				</p>
+			</div>
+			<div class="col-12 col-lg">
+				<p class="m-0">
+					<span>Стоимость: </span>
+					<span class="text-warning">{{ subscription.price }}</span>
+				</p>
+			</div>
+		</div>
+	</div>
+
+</div>
+

@@ -1,0 +1,72 @@
+<div class="container-fluid py-5">
+
+	<h1 class="text-center" data-aos="zoom-in">
+		<span *ngIf="role === 'USER'">Мои книги</span>
+		<span *ngIf="role === 'MANAGER'">Заявки</span>
+	</h1>
+
+</div>
+
+<div class="container">
+
+	<div class="row fs-5">
+		@for (i of orderings; track i.id) {
+			<div class="col-12 col-lg-4 mb-4" data-aos="zoom-in">
+				<div class="card card-body h-100 rounded-0">
+					<a appNavigate [navigateURL]="'book'" [queryParams]="{id:i.bookId}" role="button" class="mb-2">
+						<img [src]="i.bookImg" alt="img" class="object-fit-cover w-100" height="600">
+					</a>
+					<p class="fs-4 mb-2 text-center">{{ i.bookName }}</p>
+					<p class="m-0">{{ 'Статус: ' + i.statusName }}</p>
+					<p *ngIf="role === 'MANAGER'" class="m-0">{{ 'Клиент: ' + i.ownerFio }}</p>
+					<p class="m-0">{{ 'Начало действия аренды: ' + i.date }}</p>
+					<p class="m-0">{{ 'Дата заявки: ' + i.dateStart }}</p>
+					<p *ngIf="i.dateEnd" class="m-0">{{ 'Дата возврата: ' + i.dateEnd }}</p>
+					<p class="m-0">{{ 'Дней: ' + i.days }}</p>
+					<p class="m-0">{{ 'Стоимость за сутки: ' + i.price }}</p>
+					<p class="m-0">{{ 'Сумма: ' + i.sum }}</p>
+					<p *ngIf="i.percent" class="m-0">{{ 'Процент скидки: ' + i.percent + '%' }}</p>
+					<p *ngIf="i.percent" class="m-0">{{ 'Скидка: ' + i.discountName }}</p>
+
+					<div class="mt-auto"></div>
+
+					<div *ngIf="role === 'MANAGER'">
+
+						<select *ngIf="i.status === 'WAITING'" (change)="updateDiscount(i.id,$event)"
+								class="form-select rounded-0 mt-2">
+							<option value="0">Без скидки</option>
+							@for (i of discounts;track i.id){
+								<option [value]="i.id" [label]="i.name" [selected]="i.id === i.discountId"></option>
+							}
+						</select>
+
+						<button *ngIf="i.status === 'WAITING'" type="button"
+								class="btn btn-warning w-100 rounded-0 mt-2" (click)="booked(i.id)">
+							Забронировать
+						</button>
+
+						<button *ngIf="i.status === 'BOOKED'" type="button" (click)="done(i.id)"
+								class="btn btn-warning w-100 rounded-0 mt-2">
+							Передать клиенту
+						</button>
+						<button *ngIf="i.status === 'DONE'" type="button" (click)="returned(i.id)"
+								class="btn btn-warning w-100 rounded-0 mt-2">
+							Вернуть
+						</button>
+						<button *ngIf="i.status === 'WAITING' || i.status === 'BOOKED'" type="button" (click)="rejected(i.id)"
+								class="btn btn-danger w-100 rounded-0 mt-2">
+							Отменить
+						</button>
+					</div>
+
+				</div>
+			</div>
+		} @empty {
+			<div class="col-12" data-aos="zoom-in">
+				<p class="fs-1 text-center m-0">Заявки отсутствуют</p>
+			</div>
+		}
+	</div>
+
+</div>
+

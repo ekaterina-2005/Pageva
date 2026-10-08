@@ -1,0 +1,20 @@
+<div class="card card-body rounded-0">
+	<form [formGroup]="discountFormGroup" (ngSubmit)="update()" class="row">
+		<div class="col-12 col-lg my-1">
+			<input type="text" formControlName="name" class="form-control rounded-0" placeholder="Наименование"
+				   minlength="1" maxlength="255">
+		</div>
+		<div class="col-12 col-lg my-1">
+			<input type="number" formControlName="percent" class="form-control rounded-0" placeholder="Проценты"
+				   min="1" step="1" max="100">
+		</div>
+		<div class="col-12 col-lg my-1">
+			<button type="submit" class="btn btn-warning rounded-0 w-100" [disabled]="discountFormGroup.invalid">
+				Обновить
+			</button>
+		</div>
+		<div class="col-12 col-lg my-1">
+			<a (click)="delete()" class="btn btn-primary rounded-0 w-100">Удалить</a>
+		</div>
+	</form>
+</div>

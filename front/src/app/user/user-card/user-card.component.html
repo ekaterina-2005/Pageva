@@ -1,0 +1,22 @@
+<div class="row mb-1 d-flex justify-content-center" data-aos="zoom-in">
+	<div class="col-12 col-lg mb-2">
+		<input class="form-control rounded-0" readonly type="text" [value]="user.fio">
+	</div>
+	<div class="col-12 col-lg mb-2">
+		<input class="form-control rounded-0" readonly type="text" [value]="user.email">
+	</div>
+	<div class="col-12 col-lg mb-2">
+		<select (change)="updateRole()" [(ngModel)]="user.role" class="form-select rounded-0" required>
+			<option *ngFor="let r of roles | keyvalue" [label]="r.value" [value]="r.key"></option>
+		</select>
+	</div>
+	<div class="col-12 col-lg-2 mb-2">
+		<button (click)="lock()" class="btn btn-info rounded-0 w-100" type="button">
+			<span *ngIf="user.lock">Заблокировать</span>
+			<span *ngIf="!user.lock">Разблокировать</span>
+		</button>
+	</div>
+	<div class="col-12 col-lg-auto mb-2">
+		<button (click)="delete()" class="btn btn-primary rounded-0 w-100" type="button">Удалить</button>
+	</div>
+</div>

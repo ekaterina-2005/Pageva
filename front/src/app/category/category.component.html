@@ -1,0 +1,33 @@
+<div class="container-fluid py-5">
+
+	<h1 class="text-center" data-aos="zoom-in">Жанры</h1>
+
+</div>
+
+<div class="container">
+
+	<div class="card card-body rounded-0 mb-4" data-aos="zoom-in">
+		<form [formGroup]="categoryFormGroup" (ngSubmit)="save()" class="row">
+			<div class="col-12 col-lg-6 my-1">
+				<input type="text" formControlName="name" class="form-control rounded-0"
+					   placeholder="Наименование">
+			</div>
+			<div class="col-12 col-lg my-1">
+				<button type="submit" class="btn btn-warning w-100 rounded-0" [disabled]="categoryFormGroup.invalid">
+					Добавить
+				</button>
+			</div>
+		</form>
+	</div>
+
+	<div class="row">
+
+		@for (i of categories; track i.id) {
+			<div class="mb-2" data-aos="zoom-in">
+				<app-category-card [category]="i"></app-category-card>
+			</div>
+		}
+
+	</div>
+
+</div>

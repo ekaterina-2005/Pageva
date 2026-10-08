@@ -1,0 +1,35 @@
+<div class="container-fluid py-5">
+
+	<h1 class="text-center" data-aos="zoom-in">Подписки</h1>
+
+	<div *ngIf="role === 'ADMIN'" class="row d-flex justify-content-center mt-4" data-aos="zoom-in">
+		<div class="col-auto">
+			<a appNavigate [navigateURL]="'subscription_add'" class="btn btn-warning rounded-0">Добавить</a>
+		</div>
+	</div>
+
+</div>
+
+<div class="container">
+
+	<div class="row fs-5">
+		@for (i of subscriptionsSorted; track i.id) {
+			<div class="col-12 col-lg-4 mb-4" data-aos="zoom-in">
+				<a appNavigate [navigateURL]="'subscription'" [queryParams]="{id:i.id}" role="button">
+					<div class="card card-body rounded-0">
+						<p class="fs-4 mb-2 text-center">{{ i.name }}</p>
+						<p class="m-0">
+							<span>Длительность: </span>
+							<span class="text-warning">{{ i.duration + ' дн.' }}</span>
+						</p>
+						<p class="m-0">
+							<span>Стоимость: </span>
+							<span class="text-warning">{{ i.price }}</span>
+						</p>
+					</div>
+				</a>
+			</div>
+		}
+	</div>
+
+</div>

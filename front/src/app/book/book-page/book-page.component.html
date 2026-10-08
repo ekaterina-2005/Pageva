@@ -1,0 +1,160 @@
+<div class="container-fluid py-5">
+
+	<h1 class="text-center" data-aos="zoom-in">{{ book.name }}</h1>
+
+	<div class="row d-flex justify-content-center mt-4" data-aos="zoom-in">
+		<div class="col-auto">
+			<a appNavigate [navigateURL]="'books'" class="btn btn-warning rounded-0">Назад</a>
+		</div>
+		<div *ngIf="role === 'MANAGER' && book.type === 'ELECTRONIC'" class="col-auto">
+			<a (click)="visibility()" class="btn btn-warning rounded-0">
+				<span *ngIf="book.visibility">Скрыть</span>
+				<span *ngIf="!book.visibility">Вернуть</span>
+			</a>
+		</div>
+		<div *ngIf="role === 'MANAGER' && book.type === 'ORDINARY'" class="col-auto">
+			<a (click)="updateRepair()" class="btn btn-warning rounded-0">
+				<span *ngIf="!book.repair">Реставрировать</span>
+				<span *ngIf="book.repair">Вернуть</span>
+			</a>
+		</div>
+		<div *ngIf="role === 'MANAGER'" class="col-auto">
+			<a appNavigate [navigateURL]="'book_update'" [queryParams]="{id:book.id}" class="btn btn-warning rounded-0">Обновить</a>
+		</div>
+		<div *ngIf="role === 'MANAGER'" class="col-auto">
+			<a (click)="delete()" class="btn btn-primary rounded-0">Удалить</a>
+		</div>
+	</div>
+
+</div>
+
+<div class="container mb-5">
+
+	<div class="row fs-4">
+		<div class="col-12 col-lg-4 mb-4" data-aos="zoom-in">
+			<img [src]="book.img" alt="img" class="object-fit-cover w-100" height="650">
+		</div>
+		<div class="col-12 col-lg mb-4" data-aos="zoom-in">
+			<div class="card card-body rounded-0 h-100 d-flex justify-content-center">
+				<div>
+					<div *ngIf="role === 'USER' && book.type === 'ORDINARY' && book.quantityFree">
+						<form [formGroup]="orderingFormGroup" (ngSubmit)="ordering()" class="row mb-2">
+							<div class="col-12 col-lg-6 my-1">
+								<input type="date" formControlName="date" class="form-control rounded-0" [min]="minDate"
+									   [max]="maxDate">
+							</div>
+							<div class="col-12 col-lg-6 my-1">
+								<input type="number" formControlName="days" class="form-control rounded-0" min="1"
+									   step="1"
+									   max="100" placeholder="Количество дней">
+							</div>
+							<div class="col-12 col-lg-6 my-1">
+								<select (change)="changeDiscountId($event)" class="form-select rounded-0">
+									<option value="0">Выберите скидку (опционально)</option>
+									@for (i of discounts; track i.id) {
+										<option [value]="i.id" [label]="i.percent + '% | ' + i.name"></option>
+									}
+								</select>
+							</div>
+							<div class="col-12 col-lg-6 my-1">
+								<button type="submit" class="btn btn-warning w-100 rounded-0"
+										[disabled]="orderingFormGroup.invalid">Оформить заявку
+								</button>
+							</div>
+							<div class="col-12 mt-2">
+								<p class="m-0">{{ 'Итоговая сумма: ' + (orderingSum | number:'1.2-2') }}</p>
+							</div>
+						</form>
+					</div>
+					<div *ngIf="role === 'USER' && book.type === 'ELECTRONIC' && subscriptionActive">
+						<a [href]="book.file" target="_blank" class="btn btn-warning rounded-0 w-100">Скачать книгу</a>
+					</div>
+					<p *ngIf="role === 'MANAGER' || role === 'ADMIN'" class="m-0">
+						<span>Статус: </span>
+						<span *ngIf="book.type === 'ELECTRONIC' && book.visibility" class="text-warning">Виден</span>
+						<span *ngIf="book.type === 'ELECTRONIC' && !book.visibility" class="text-warning">Невиден</span>
+						<span *ngIf="book.type === 'ORDINARY' && !book.repair" class="text-warning">Виден</span>
+						<span *ngIf="book.type === 'ORDINARY' && book.repair" class="text-warning">Невиден</span>
+					</p>
+					<p class="m-0">
+						<span>Тип: </span>
+						<span class="text-warning">{{ book.typeName }}</span>
+					</p>
+					<p class="m-0">
+						<span>Автор: </span>
+						<span class="text-warning">{{ book.author }}</span>
+					</p>
+					<p class="m-0">
+						<span>Дата издания: </span>
+						<span class="text-warning">{{ book.date }}</span>
+					</p>
+					<div *ngIf="book.type === 'ORDINARY'">
+						<p class="m-0">
+							<span>Стоимость аренды за сутки: </span>
+							<span class="text-warning">{{ book.price }}</span>
+						</p>
+						<p class="m-0">
+							<span>Общее количество: </span>
+							<span class="text-warning">{{ book.quantity }}</span>
+						</p>
+						<p class="m-0">
+							<span>Доступное количество: </span>
+							<span class="text-warning">{{ book.quantityFree }}</span>
+						</p>
+						<p class="m-0">
+							<span>Сколько раз брали в аренду: </span>
+							<span class="text-warning">{{ book.count }}</span>
+						</p>
+					</div>
+					<p class="m-0">
+						<span>Жанр: </span>
+						<span class="text-warning">{{ book.categoryName }}</span>
+					</p>
+					<p class="m-0">
+						<span>Возрастная категория: </span>
+						<span class="text-warning">{{ book.ageName }}</span>
+					</p>
+					<p class="m-0">
+						<span>Количество страниц: </span>
+						<span class="text-warning">{{ book.page }}</span>
+					</p>
+					<p class="m-0">
+						<span>Ориентировочное время чтения: </span>
+						<span class="text-warning">{{ book.read }}</span>
+					</p>
+					<p class="m-0 fs-5">
+						<span>Описание: </span>
+						<span class="text-secondary">{{ book.description }}</span>
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<div class="container">
+
+	<div *ngIf="role === 'USER' && checkCommit()" class="card card-body rounded-0 mb-4" data-aos="zoom-in">
+		<form [formGroup]="commentFormGroup" (ngSubmit)="comment()" class="row">
+			<div class="col-12">
+				<textarea formControlName="text" class="form-control rounded-0" minlength="1"
+						  maxlength="5000" placeholder="Комментарий"></textarea>
+			</div>
+			<div class="col-12 col-lg-6 mt-2">
+				<input type="number" formControlName="score" class="form-control rounded-0" min="1" step="1" max="10"
+					   placeholder="Оценка">
+			</div>
+			<div class="col-12 col-lg-6 mt-2">
+				<button type="submit" class="btn btn-warning w-100 rounded-0" [disabled]="commentFormGroup.invalid">
+					Добавить
+				</button>
+			</div>
+		</form>
+	</div>
+
+	@for (i of comments; track i.id) {
+		<app-book-page-comment [comment]="i"></app-book-page-comment>
+	}
+
+</div>

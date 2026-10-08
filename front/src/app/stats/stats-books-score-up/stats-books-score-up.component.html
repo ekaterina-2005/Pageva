@@ -1,0 +1,16 @@
+<table class="table table-hover fs-5">
+	<thead>
+	<tr>
+		<th scope="col">Книга</th>
+		<th scope="col">Оценка</th>
+	</tr>
+	</thead>
+	<tbody>
+		@for (i of books; track i.id) {
+			<tr>
+				<th scope="row">{{ i.name }}</th>
+				<td>{{ i.score }}</td>
+			</tr>
+		}
+	</tbody>
+</table>

@@ -1,0 +1,39 @@
+<div class="container-fluid py-5">
+
+	<h1 class="text-center" data-aos="zoom-in">Скидки</h1>
+
+</div>
+
+<div class="container">
+
+	<div class="mb-4" data-aos="zoom-in">
+		<div class="card card-body rounded-0">
+			<form [formGroup]="discountFormGroup" (ngSubmit)="save()" class="row">
+				<div class="col-12 col-lg-6 my-1">
+				<input type="text" formControlName="name" class="form-control rounded-0" placeholder="Наименование"
+					   minlength="1" maxlength="255">
+				</div>
+				<div class="col-12 col-lg my-1">
+				<input type="number" formControlName="percent" class="form-control rounded-0"
+					   placeholder="Проценты" min="1" step="1" max="100">
+				</div>
+				<div class="col-12 col-lg my-1">
+				<button type="submit" class="btn btn-warning w-100 rounded-0" [disabled]="discountFormGroup.invalid">
+					Добавить
+				</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<div class="row">
+
+		@for (i of discounts; track i.id) {
+			<div class="mb-2" data-aos="zoom-in">
+				<app-discount-card [discount]="i"></app-discount-card>
+			</div>
+		}
+
+	</div>
+
+</div>
