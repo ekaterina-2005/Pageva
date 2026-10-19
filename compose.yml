@@ -1,34 +1,53 @@
-services :
-    database :
-        image :          postgres
-        container_name : database
-        environment :
-            POSTGRES_USER :     postgres
-            POSTGRES_PASSWORD : root
-            POSTGRES_DB :       pageva
-        ports :
-        - 5432:5432
-    application-server :
-        image :          application-server:latest
-        build :
-            context :    back
-            dockerfile : Dockerfile
-        container_name : application-server
-        ports :
-        - 8080:8080
-        depends_on :
-        - database
-        environment :
-        - SERVER_PORT=8080
-        - SPRING_DATASOURCE_URL=jdbc:postgresql://database/pageva
-        - SPRING_DATASOURCE_USERNAME=postgres
-        - SPRING_DATASOURCE_PASSWORD=root
-        - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-    web-server :
-        image :          web-server:latest
-        build :
-            context :    front
-            dockerfile : Dockerfile
-        container_name : web-server
-        ports :
-        - 4200:4200
+services:
+  database:
+    image: postgres:16
+    container_name: database
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: pageva
+    ports:
+      - "5434:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U postgres -d pageva"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  application-server:
+    build:
+      context: back
+      dockerfile: Dockerfile
+    container_name: application-server
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      SERVER_PORT: 8080
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/pageva
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    volumes:
+      - uploads:/application/BOOT-INF/classes/img
+
+  web-server:
+    build:
+      context: front
+      dockerfile: Dockerfile
+    container_name: web-server
+    restart: always
+    ports:
+      - "4200:4200"
+    depends_on:
+      - application-server
+
+volumes:
+  pg_data:
+  uploads:

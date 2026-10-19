@@ -27,8 +27,8 @@ public record BookDto(
         @Size(min = 1, max = 255, message = "read is required length 1-255")
         @NotEmpty(message = "read is required")
         String read,
-        @Min(value = 0, message = "page is required min 0.01")
-        @Max(value = 1000000, message = "page is required max 1000000")
+        @Min(value = 0, message = "price is required min 0.01")
+        @Max(value = 1000000, message = "price is required max 1000000")
         float price,
         @Min(value = 0, message = "quantity is required min 0")
         @Max(value = 1000000, message = "quantity is required max 1000000")
