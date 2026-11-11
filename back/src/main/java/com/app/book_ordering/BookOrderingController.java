@@ -36,12 +36,12 @@ public class BookOrderingController {
 
     @Secured({MANAGER})
     @GetMapping("/{id}/booked")
-    public Result booked(@PathVariable String id) {
+    public Result booked(@PathVariable String id, @RequestParam(defaultValue = "0") String copyId) {
         return new Result(
                 true,
                 StatusCode.SUCCESS,
                 "Success Booked",
-                toDtoConverter.convert(service.booked(id))
+                toDtoConverter.convert(service.booked(id, copyId))
         );
     }
 

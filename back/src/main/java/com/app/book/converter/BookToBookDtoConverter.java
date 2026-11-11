@@ -3,6 +3,8 @@ package com.app.book.converter;
 import com.app.book.Book;
 import com.app.book.BookDto;
 import com.app.book_comment.converter.BookCommentToBookCommentDtoConverter;
+import com.app.book_copy.BookCopy;
+import com.app.book_copy.converter.BookCopyToBookCopyDtoConverter;
 import com.app.book_ordering.converter.BookOrderingToBookOrderingDtoConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
@@ -16,6 +18,7 @@ public class BookToBookDtoConverter implements Converter<Book, BookDto> {
 
     private final BookCommentToBookCommentDtoConverter bookCommentToBookCommentDtoConverter;
     private final BookOrderingToBookOrderingDtoConverter bookOrderingToBookOrderingDtoConverter;
+    private final BookCopyToBookCopyDtoConverter bookCopyToBookCopyDtoConverter;
 
     @Override
     public BookDto convert(Book source) {
@@ -54,7 +57,10 @@ public class BookToBookDtoConverter implements Converter<Book, BookDto> {
                 source.getScore(),
 
                 source.getComments().stream().map(bookCommentToBookCommentDtoConverter::convert).collect(Collectors.toList()),
-                source.getOrderings().stream().map(bookOrderingToBookOrderingDtoConverter::convert).collect(Collectors.toList())
+                source.getOrderings().stream().map(bookOrderingToBookOrderingDtoConverter::convert).collect(Collectors.toList()),
+
+                (int) source.getCopies().stream().filter(BookCopy::isActive).count(),
+                source.getCopies().stream().map(bookCopyToBookCopyDtoConverter::convert).collect(Collectors.toList())
         );
     }
 }

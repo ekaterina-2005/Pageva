@@ -1,6 +1,7 @@
 package com.app.book;
 
 import com.app.book_comment.BookCommentDto;
+import com.app.book_copy.BookCopyDto;
 import com.app.book_ordering.BookOrderingDto;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -60,6 +61,9 @@ public record BookDto(
         float score,
 
         List<BookCommentDto> comments,
-        List<BookOrderingDto> orderings
+        List<BookOrderingDto> orderings,
+
+        int copiesCount,
+        List<BookCopyDto> copies
 ) {
 }

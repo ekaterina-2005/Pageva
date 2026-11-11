@@ -5,6 +5,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
+import java.math.BigDecimal;
+
 public record BookOrderingDto(
         Long id,
 
@@ -33,6 +35,15 @@ public record BookOrderingDto(
         String discountName,
 
         Long ownerId,
-        String  ownerFio
+        String  ownerFio,
+
+        Long bookCopyId,
+        String inventoryNumber,
+
+        int overdueDays,
+        Long fineId,
+        BigDecimal fineAmount,
+        String fineStatus,
+        String fineStatusName
 ) {
 }

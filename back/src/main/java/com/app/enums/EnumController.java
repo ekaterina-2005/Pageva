@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @RestController
@@ -45,6 +46,30 @@ public class EnumController {
                 true,
                 StatusCode.SUCCESS,
                 "Book Types",
+                res
+        );
+    }
+
+    @GetMapping("/book/copy/statuses")
+    public Result bookCopyStatuses() {
+        Map<String, String> res = new LinkedHashMap<>();
+        for (BookCopyStatus i : BookCopyStatus.values()) res.put(i.name(), i.getName());
+        return new Result(
+                true,
+                StatusCode.SUCCESS,
+                "Book Copy Statuses",
+                res
+        );
+    }
+
+    @GetMapping("/fine/statuses")
+    public Result fineStatuses() {
+        Map<String, String> res = new LinkedHashMap<>();
+        for (FineStatus i : FineStatus.values()) res.put(i.name(), i.getName());
+        return new Result(
+                true,
+                StatusCode.SUCCESS,
+                "Fine Statuses",
                 res
         );
     }

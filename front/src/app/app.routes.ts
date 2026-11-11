@@ -18,6 +18,7 @@ import {SubscriptionAddComponent} from "./subscription/subscription-add/subscrip
 import {SubscriptionUpdateComponent} from "./subscription/subscription-update/subscription-update.component";
 import {SubscriptionPageComponent} from "./subscription/subscription-page/subscription-page.component";
 import {SubscriptionOrderingComponent} from "./subscription-ordering/subscription-ordering.component";
+import {FineComponent} from "./fine/fine.component";
 
 export const routes: Routes = [
 
@@ -47,6 +48,8 @@ export const routes: Routes = [
 	{path: "subscriptions_orderings", component: SubscriptionOrderingComponent},
 
 	{path: "orderings", component: OrderingComponent},
+
+	{path: "fines", component: FineComponent},
 
 	{path: "stats", component: StatsComponent},
 

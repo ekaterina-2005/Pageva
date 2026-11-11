@@ -1,5 +1,7 @@
 package com.app.book;
 
+import com.app.book_copy.BookCopy;
+import com.app.book_copy.BookCopyService;
 import com.app.category.CategoryService;
 import com.app.enums.BookAge;
 import com.app.enums.BookType;
@@ -8,6 +10,7 @@ import com.app.system.exception.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -21,6 +24,7 @@ public class BookService {
 
     private final BookRepository repository;
     private final CategoryService categoryService;
+    private final BookCopyService bookCopyService;
 
     public List<Book> findAll() {
         return repository.findAll(Sort.by(Sort.Direction.DESC, "id"));
@@ -34,23 +38,42 @@ public class BookService {
         return repository.findById(Long.parseLong(id)).orElseThrow(() -> new ObjectNotFoundException("Не найдена книга по ИД: " + id));
     }
 
+    // для обычной книги сразу создаются quantity экземпляров
+    @Transactional
     public Book save(Book save, String categoryId, String age, String type) {
         setAge(save, age);
         setType(save, type);
         save.setCategory(categoryService.find(categoryId));
-        return repository.save(save);
+        Book saved = repository.save(save);
+        if (saved.getType() == BookType.ORDINARY) {
+            if (saved.getQuantity() > 0) bookCopyService.createCopies(saved, saved.getQuantity());
+            bookCopyService.syncQuantity(saved);
+        }
+        return saved;
     }
 
     public Book saveForTest(Book save) {
         return repository.save(save);
     }
 
+    // увеличение quantity досоздаёт экземпляры, уменьшение — только через списание экземпляров
+    @Transactional
     public Book update(String id, Book update, String categoryId, String age, String type) {
         Book old = find(id);
         old.update(update);
         setAge(old, age);
         setType(old, type);
         old.setCategory(categoryService.find(categoryId));
+        if (old.getType() == BookType.ORDINARY) {
+            int active = (int) old.getCopies().stream().filter(BookCopy::isActive).count();
+            if (update.getQuantity() < active) {
+                throw new BadRequestException("Чтобы уменьшить количество, спишите лишние экземпляры на странице книги");
+            }
+            Book saved = repository.save(old);
+            if (update.getQuantity() > active) bookCopyService.createCopies(saved, update.getQuantity() - active);
+            bookCopyService.syncQuantity(saved);
+            return saved;
+        }
         return repository.save(old);
     }
 

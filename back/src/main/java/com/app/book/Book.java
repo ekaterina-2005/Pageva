@@ -1,9 +1,11 @@
 package com.app.book;
 
 import com.app.book_comment.BookComment;
+import com.app.book_copy.BookCopy;
 import com.app.book_ordering.BookOrdering;
 import com.app.category.Category;
 import com.app.enums.BookAge;
+import com.app.enums.BookCopyStatus;
 import com.app.enums.BookOrderingStatus;
 import com.app.enums.BookType;
 import jakarta.persistence.*;
@@ -60,6 +62,9 @@ public class Book implements Serializable {
     private List<BookComment> comments = new ArrayList<>();
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     private List<BookOrdering> orderings = new ArrayList<>();
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    @OrderBy("id")
+    private List<BookCopy> copies = new ArrayList<>();
 
     public Book(Long id, String name, String author, int page, String date, String read, float price, int quantity, String description) {
         this.id = id;
@@ -99,7 +104,13 @@ public class Book implements Serializable {
         return orderings.size();
     }
 
+    // для обычной книги: свободные экземпляры минус заявки, ожидающие бронирования
     public int getQuantityFree() {
+        if (type == BookType.ORDINARY) {
+            long available = copies.stream().filter(copy -> copy.getStatus() == BookCopyStatus.AVAILABLE).count();
+            long waiting = orderings.stream().filter(ordering -> ordering.getStatus() == BookOrderingStatus.WAITING).count();
+            return (int) Math.max(0, available - waiting);
+        }
         return quantity - orderings.stream().reduce(0, (i, ordering) -> {
             if (ordering.getStatus() != BookOrderingStatus.RETURNED &&
                     ordering.getStatus() != BookOrderingStatus.REJECTED
@@ -131,4 +142,4 @@ public class Book implements Serializable {
         return Integer.parseInt(parts[0]) * 60 + Integer.parseInt(parts[1]);
     }
 
-}
+}

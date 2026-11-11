@@ -2,12 +2,20 @@ package com.app.book_ordering;
 
 import com.app.appUser.AppUser;
 import com.app.appUser.UserService;
+import com.app.book.Book;
 import com.app.book.BookService;
+import com.app.book_copy.BookCopy;
+import com.app.book_copy.BookCopyService;
 import com.app.discount.DiscountService;
+import com.app.enums.BookCopyStatus;
 import com.app.enums.BookOrderingStatus;
+import com.app.enums.BookType;
+import com.app.fine.FineService;
+import com.app.system.exception.BadRequestException;
 import com.app.system.exception.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +32,8 @@ public class BookOrderingService {
     private final BookService bookService;
     private final DiscountService discountService;
     private final UserService userService;
+    private final BookCopyService bookCopyService;
+    private final FineService fineService;
 
     public List<BookOrdering> findAll() {
         List<BookOrdering> orderings = new ArrayList<>();
@@ -50,33 +60,67 @@ public class BookOrderingService {
     }
 
     public BookOrdering booked(String id) {
+        return booked(id, "0");
+    }
+
+    // бронирование закрепляет за заявкой конкретный экземпляр (copyId = "0" — первый свободный)
+    @Transactional
+    public BookOrdering booked(String id, String copyId) {
         BookOrdering ordering = find(id);
+        checkStatus(ordering, BookOrderingStatus.WAITING);
+        if (isOrdinary(ordering)) {
+            BookCopy copy = bookCopyService.findAvailable(ordering.getBook(), copyId);
+            ordering.setBookCopy(bookCopyService.setStatus(copy, BookCopyStatus.RESERVED));
+        }
         ordering.setStatus(BookOrderingStatus.BOOKED);
         return repository.save(ordering);
     }
 
+    @Transactional
     public BookOrdering rejected(String id) {
         BookOrdering ordering = find(id);
+        checkStatus(ordering, BookOrderingStatus.WAITING, BookOrderingStatus.BOOKED);
+        if (ordering.getBookCopy() != null) {
+            bookCopyService.setStatus(ordering.getBookCopy(), BookCopyStatus.AVAILABLE);
+            ordering.setBookCopy(null);
+        }
         ordering.setStatus(BookOrderingStatus.REJECTED);
         return repository.save(ordering);
     }
 
+    @Transactional
     public BookOrdering done(String id) {
         BookOrdering ordering = find(id);
+        checkStatus(ordering, BookOrderingStatus.BOOKED);
+        if (ordering.getBookCopy() != null) bookCopyService.setStatus(ordering.getBookCopy(), BookCopyStatus.ISSUED);
         ordering.setStatus(BookOrderingStatus.DONE);
         return repository.save(ordering);
     }
 
+    // возврат освобождает экземпляр и при просрочке начисляет штраф
+    @Transactional
     public BookOrdering returned(String id) {
         BookOrdering ordering = find(id);
+        checkStatus(ordering, BookOrderingStatus.DONE);
+        if (ordering.getBookCopy() != null) bookCopyService.setStatus(ordering.getBookCopy(), BookCopyStatus.AVAILABLE);
         ordering.setStatus(BookOrderingStatus.RETURNED);
         ordering.setDateEnd(getDateNow());
-        return repository.save(ordering);
+        BookOrdering saved = repository.save(ordering);
+        fineService.charge(saved);
+        return saved;
     }
 
     public BookOrdering save(BookOrdering save, String bookId, String discountId) {
-        save.setOwner(userService.getCurrentUser());
-        save.setBook(bookService.find(bookId));
+        AppUser user = userService.getCurrentUser();
+        if (fineService.hasUnpaid(user)) {
+            throw new BadRequestException("У вас есть неоплаченный штраф. Оформить новую заявку можно после его оплаты");
+        }
+        Book book = bookService.find(bookId);
+        if (book.getType() == BookType.ORDINARY && book.getQuantityFree() <= 0) {
+            throw new BadRequestException("Нет свободных экземпляров книги «" + book.getName() + "»");
+        }
+        save.setOwner(user);
+        save.setBook(book);
         if (!discountId.equals("0")) save.setDiscount(discountService.find(discountId));
         return repository.save(save);
     }
@@ -86,6 +130,15 @@ public class BookOrderingService {
         if (!discountId.equals("0")) ordering.setDiscount(discountService.find(discountId));
         else ordering.setDiscount(null);
         return repository.save(ordering);
+    }
+
+    private boolean isOrdinary(BookOrdering ordering) {
+        return ordering.getBook() != null && ordering.getBook().getType() == BookType.ORDINARY;
+    }
+
+    private void checkStatus(BookOrdering ordering, BookOrderingStatus... allowed) {
+        for (BookOrderingStatus status : allowed) if (ordering.getStatus() == status) return;
+        throw new BadRequestException("Действие недоступно для заявки в статусе «" + ordering.getStatus().getName() + "»");
     }
 
 }

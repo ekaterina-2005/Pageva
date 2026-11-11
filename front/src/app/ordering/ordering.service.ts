@@ -36,10 +36,15 @@ export class OrderingService {
 		})
 	}
 
-	booked(id: number) {
+	booked(id: number, copyId: number = 0) {
 		this.http.get(
 			this.url + `/${id}/booked`,
-			{headers: this.global.headersToken}
+			{
+				headers: this.global.headersToken,
+				params: new HttpParams().appendAll({
+					copyId: copyId,
+				})
+			}
 		).subscribe({
 			next: () => this.findAll(),
 			error: (e: any) => this.global.error(e),

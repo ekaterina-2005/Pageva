@@ -11,6 +11,7 @@ import {OrderingService} from "../../ordering/ordering.service";
 import {AlertService} from "../../alert/alert.service";
 import {BookPageCommentComponent} from "./book-page-comment/book-page-comment.component";
 import {SubscriptionOrderingService} from "../../subscription-ordering/subscription-ordering.service";
+import {BookCopyService} from "../book-copy.service";
 
 @Component({
 	selector: 'app-book-page',
@@ -60,6 +61,8 @@ export class BookPageComponent implements OnInit {
 	discounts: any[] = [];
 	discountId: number = 0;
 
+	copiesCount: number = 1;
+
 	minDate: string = '';
 	maxDate: string = '';
 
@@ -73,6 +76,7 @@ export class BookPageComponent implements OnInit {
 		private orderingService: OrderingService,
 		private alert: AlertService,
 		private subscriptionOrderingService:SubscriptionOrderingService,
+		private bookCopyService: BookCopyService,
 	) {
 	}
 
@@ -116,6 +120,37 @@ export class BookPageComponent implements OnInit {
 				error: (e: any) => this.global.error(e)
 			})
 		}
+	}
+
+	reload() {
+		this.bookService.find(this.book.id).subscribe({
+			next: (res: any) => this.book = res.data,
+			error: (e: any) => this.global.error(e),
+		})
+	}
+
+	addCopies() {
+		this.bookCopyService.save(this.book.id, this.copiesCount).subscribe({
+			next: () => {
+				this.alert.showAlertMessage("Экземпляры добавлены");
+				this.reload();
+			},
+			error: (e: any) => this.global.error(e),
+		})
+	}
+
+	updateCopyStatus(id: number, status: string) {
+		this.bookCopyService.updateStatus(id, status).subscribe({
+			next: () => this.reload(),
+			error: (e: any) => this.global.error(e),
+		})
+	}
+
+	deleteCopy(id: number) {
+		this.bookCopyService.delete(id).subscribe({
+			next: () => this.reload(),
+			error: (e: any) => this.global.error(e),
+		})
 	}
 
 	updateRepair() {

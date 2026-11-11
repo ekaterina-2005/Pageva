@@ -2,8 +2,10 @@ package com.app.book_ordering;
 
 import com.app.appUser.AppUser;
 import com.app.book.Book;
+import com.app.book_copy.BookCopy;
 import com.app.discount.Discount;
 import com.app.enums.BookOrderingStatus;
+import com.app.fine.Fine;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -11,6 +13,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 
 import static com.app.util.Global.getDateNow;
 import static com.app.util.Global.round;
@@ -41,9 +46,14 @@ public class BookOrdering implements Serializable {
     @ManyToOne
     private Book book;
     @ManyToOne
+    private BookCopy bookCopy;
+    @ManyToOne
     private Discount discount;
     @ManyToOne
     private AppUser owner;
+
+    @OneToOne(mappedBy = "ordering", cascade = CascadeType.ALL)
+    private Fine fine;
 
     public BookOrdering(String date, int days) {
         this.date = date;
@@ -73,4 +83,34 @@ public class BookOrdering implements Serializable {
     public String getDiscountName() {
         return discount == null ? "" : discount.getName();
     }
-}
+
+    public Long getBookCopyId() {
+        return bookCopy == null ? 0L : bookCopy.getId();
+    }
+
+    public String getInventoryNumber() {
+        return bookCopy == null ? "" : bookCopy.getInventoryNumber();
+    }
+
+    // дни просрочки: дата возврата (или сегодня, если книга у читателя) минус (дата начала аренды + дни аренды)
+    public int getOverdueDays() {
+        if (status == BookOrderingStatus.DONE) return getOverdueDays(LocalDate.now());
+        if (status == BookOrderingStatus.RETURNED && dateEnd != null && !dateEnd.isEmpty()) {
+            try {
+                return getOverdueDays(LocalDate.parse(dateEnd));
+            } catch (DateTimeParseException e) {
+                return 0;
+            }
+        }
+        return 0;
+    }
+
+    public int getOverdueDays(LocalDate returnDate) {
+        try {
+            LocalDate dueDate = LocalDate.parse(date).plusDays(days);
+            return (int) Math.max(0, ChronoUnit.DAYS.between(dueDate, returnDate));
+        } catch (DateTimeParseException | NullPointerException e) {
+            return 0;
+        }
+    }
+}

@@ -33,9 +33,10 @@
 					   max="1000000">
 			</div>
 			<div *ngIf="type === 'ORDINARY'" class="col-12 col-lg-6 mb-2">
-				<p class="m-0">Количество</p>
+				<p class="m-0">Количество экземпляров</p>
 				<input type="number" formControlName="quantity" class="form-control rounded-0" min="0" step="1"
 					   max="1000000">
+				<p class="m-0 fs-6 text-secondary">Увеличение добавит новые экземпляры. Чтобы уменьшить количество, спишите экземпляры на странице книги.</p>
 			</div>
 			<div class="col-12 col-lg-6 mb-2">
 				<p class="m-0">Возрастная категория</p>

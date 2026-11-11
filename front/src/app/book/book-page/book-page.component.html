@@ -94,12 +94,12 @@
 							<span class="text-warning">{{ book.price }}</span>
 						</p>
 						<p class="m-0">
-							<span>Общее количество: </span>
-							<span class="text-warning">{{ book.quantity }}</span>
+							<span>Экземпляров: </span>
+							<span class="text-warning">{{ book.copiesCount }}</span>
 						</p>
 						<p class="m-0">
-							<span>Доступное количество: </span>
-							<span class="text-warning">{{ book.quantityFree }}</span>
+							<span>Свободно: </span>
+							<span class="text-warning">{{ book.quantityFree + ' из ' + book.copiesCount }}</span>
 						</p>
 						<p class="m-0">
 							<span>Сколько раз брали в аренду: </span>
@@ -128,6 +128,71 @@
 					</p>
 				</div>
 			</div>
+		</div>
+	</div>
+
+</div>
+
+<div *ngIf="role === 'MANAGER' && book.type === 'ORDINARY'" class="container mb-5">
+
+	<div class="card card-body rounded-0 fs-5" data-aos="zoom-in">
+		<p class="fs-4 mb-3 text-center">Экземпляры</p>
+
+		<div class="row mb-3">
+			<div class="col-12 col-lg-6 my-1">
+				<input type="number" [(ngModel)]="copiesCount" class="form-control rounded-0" min="1" step="1"
+					   max="1000" placeholder="Количество">
+			</div>
+			<div class="col-12 col-lg-6 my-1">
+				<button type="button" (click)="addCopies()" class="btn btn-warning w-100 rounded-0"
+						[disabled]="!copiesCount || copiesCount < 1">Добавить экземпляры
+				</button>
+			</div>
+		</div>
+
+		<div class="table-responsive">
+			<table class="table align-middle m-0">
+				<thead>
+				<tr>
+					<th>Инвентарный номер</th>
+					<th>Статус</th>
+					<th>Дата поступления</th>
+					<th>Выдач</th>
+					<th></th>
+				</tr>
+				</thead>
+				<tbody>
+					@for (c of book.copies; track c.id) {
+						<tr>
+							<td>{{ c.inventoryNumber }}</td>
+							<td class="text-warning">{{ c.statusName }}</td>
+							<td>{{ c.dateAdded }}</td>
+							<td>{{ c.orderingsSize }}</td>
+							<td class="text-end">
+								<button *ngIf="c.status === 'AVAILABLE'" type="button"
+										(click)="updateCopyStatus(c.id, 'RESTORATION')"
+										class="btn btn-warning btn-sm rounded-0 m-1">На реставрацию
+								</button>
+								<button *ngIf="c.status === 'RESTORATION' || c.status === 'WRITTEN_OFF'" type="button"
+										(click)="updateCopyStatus(c.id, 'AVAILABLE')"
+										class="btn btn-warning btn-sm rounded-0 m-1">Вернуть в фонд
+								</button>
+								<button *ngIf="c.status === 'AVAILABLE' || c.status === 'RESTORATION'" type="button"
+										(click)="updateCopyStatus(c.id, 'WRITTEN_OFF')"
+										class="btn btn-danger btn-sm rounded-0 m-1">Списать
+								</button>
+								<button *ngIf="!c.orderingsSize" type="button" (click)="deleteCopy(c.id)"
+										class="btn btn-primary btn-sm rounded-0 m-1">Удалить
+								</button>
+							</td>
+						</tr>
+					} @empty {
+						<tr>
+							<td colspan="5" class="text-center">Экземпляров нет</td>
+						</tr>
+					}
+				</tbody>
+			</table>
 		</div>
 	</div>
 

@@ -18,6 +18,7 @@
 					</a>
 					<p class="fs-4 mb-2 text-center">{{ i.bookName }}</p>
 					<p class="m-0">{{ 'Статус: ' + i.statusName }}</p>
+					<p *ngIf="i.inventoryNumber" class="m-0">{{ 'Экземпляр: ' + i.inventoryNumber }}</p>
 					<p *ngIf="role === 'MANAGER'" class="m-0">{{ 'Клиент: ' + i.ownerFio }}</p>
 					<p class="m-0">{{ 'Начало действия аренды: ' + i.date }}</p>
 					<p class="m-0">{{ 'Дата заявки: ' + i.dateStart }}</p>
@@ -27,6 +28,10 @@
 					<p class="m-0">{{ 'Сумма: ' + i.sum }}</p>
 					<p *ngIf="i.percent" class="m-0">{{ 'Процент скидки: ' + i.percent + '%' }}</p>
 					<p *ngIf="i.percent" class="m-0">{{ 'Скидка: ' + i.discountName }}</p>
+					<p *ngIf="i.overdueDays" class="m-0 text-danger">{{ 'Просрочка: ' + i.overdueDays + ' дн.' }}</p>
+					<p *ngIf="i.fineId" class="m-0 text-danger">
+						{{ 'Штраф: ' + i.fineAmount + ' BYN (' + i.fineStatusName + ')' }}
+					</p>
 
 					<div class="mt-auto"></div>
 
@@ -37,6 +42,14 @@
 							<option value="0">Без скидки</option>
 							@for (i of discounts;track i.id){
 								<option [value]="i.id" [label]="i.name" [selected]="i.id === i.discountId"></option>
+							}
+						</select>
+
+						<select *ngIf="i.status === 'WAITING' && freeCopies[i.bookId]?.length" (change)="changeCopy(i.id,$event)"
+								class="form-select rounded-0 mt-2">
+							<option value="0">Экземпляр: автоматически</option>
+							@for (c of freeCopies[i.bookId]; track c.id) {
+								<option [value]="c.id" [label]="c.inventoryNumber"></option>
 							}
 						</select>
 

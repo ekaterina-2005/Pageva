@@ -6,6 +6,7 @@ import {NavigateDirective} from "../navigate.directive";
 import {NgIf} from "@angular/common";
 import {DiscountService} from "../discount/discount.service";
 import {FormsModule} from "@angular/forms";
+import {BookCopyService} from "../book/book-copy.service";
 
 @Component({
 	selector: 'app-ordering',
@@ -24,11 +25,16 @@ export class OrderingComponent implements OnInit {
 
 	discounts: any[] = [];
 
+	// свободные экземпляры по книгам и выбранный экземпляр по заявке (0 — автоматически)
+	freeCopies: { [bookId: number]: any[] } = {};
+	selectedCopy: { [orderingId: number]: number } = {};
+
 	constructor(
 		private router: Router,
 		private global: GlobalService,
 		private orderingService: OrderingService,
 		private discountService: DiscountService,
+		private bookCopyService: BookCopyService,
 	) {
 	}
 
@@ -41,6 +47,7 @@ export class OrderingComponent implements OnInit {
 
 		this.orderingService.orderingsSubject.subscribe(value => {
 			this.orderings = value.orderings;
+			if (this.role === 'MANAGER') this.loadFreeCopies();
 		})
 		this.orderingService.findAll();
 
@@ -54,8 +61,24 @@ export class OrderingComponent implements OnInit {
 		this.orderingService.updateDiscount(id, event.target.value);
 	}
 
+	loadFreeCopies() {
+		const bookIds = new Set<number>(
+			this.orderings.filter((i: any) => i.status === 'WAITING').map((i: any) => i.bookId)
+		);
+		bookIds.forEach(bookId => {
+			this.bookCopyService.findAll(bookId).subscribe({
+				next: (res: any) => this.freeCopies[bookId] = res.data.filter((c: any) => c.status === 'AVAILABLE'),
+				error: (e: any) => this.global.error(e),
+			})
+		})
+	}
+
+	changeCopy(orderingId: number, event: any) {
+		this.selectedCopy[orderingId] = Number(event.target.value);
+	}
+
 	booked(id: number) {
-		this.orderingService.booked(id);
+		this.orderingService.booked(id, this.selectedCopy[id] || 0);
 	}
 
 	rejected(id: number) {
