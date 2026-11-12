@@ -14,7 +14,7 @@ spring :
         #
 
         username : postgres
-        password : ${DB_PASSWORD:root}
+        password : katudus
     jpa :
         hibernate :
             # схему меняет только Flyway, Hibernate лишь сверяет сущности с таблицами
@@ -38,3 +38,11 @@ spring :
 
 server :
     port : 8080
+
+springdoc :
+  api-docs :
+    path : /v3/api-docs
+  swagger-ui :
+    path : /swagger-ui.html
+  override-with-generic-response : false   # показывать только ответы, описанные в @ApiResponse
+  packages-to-scan : com.app.book, com.app.book_copy, com.app.book_ordering, com.app.appUser, com.app.security

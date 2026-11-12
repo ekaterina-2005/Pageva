@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long> {
     List<Book> findAllByAge(BookAge age);
+
+    List<Book> findByNameContainingIgnoreCaseOrAuthorContainingIgnoreCaseOrderById(String name, String author);
 }

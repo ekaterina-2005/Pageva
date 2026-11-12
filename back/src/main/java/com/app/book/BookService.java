@@ -30,6 +30,14 @@ public class BookService {
         return repository.findAll(Sort.by(Sort.Direction.DESC, "id"));
     }
 
+    // Поиск по части названия или автора без учета регистра; available=true — только со свободными экземплярами
+    public List<Book> search(String query, boolean available) {
+        String q = query == null ? "" : query.trim();
+        return repository.findByNameContainingIgnoreCaseOrAuthorContainingIgnoreCaseOrderById(q, q).stream()
+                .filter(b -> !available || b.getQuantityFree() > 0)
+                .toList();
+    }
+
     public List<Book> findAllByAge(BookAge age) {
         return repository.findAllByAge(age);
     }
@@ -56,7 +64,7 @@ public class BookService {
         return repository.save(save);
     }
 
-    // увеличение quantity досоздаёт экземпляры, уменьшение — только через списание экземпляров
+    // увеличение quantity досоздает экземпляры, уменьшение — только через списание экземпляров
     @Transactional
     public Book update(String id, Book update, String categoryId, String age, String type) {
         Book old = find(id);

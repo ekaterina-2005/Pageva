@@ -5,6 +5,7 @@ import com.app.book.BookRepository;
 import com.app.enums.BookCopyStatus;
 import com.app.enums.BookType;
 import com.app.system.exception.BadRequestException;
+import com.app.system.exception.ConflictException;
 import com.app.system.exception.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,7 @@ public class BookCopyService {
         return created;
     }
 
-    // создаёт экземпляры для книги, инвентарный номер вида INV-0001-001
+    // создает экземпляры для книги, инвентарный номер вида INV-0001-001
     public List<BookCopy> createCopies(Book book, int count) {
         if (book.getType() != BookType.ORDINARY) throw new BadRequestException("Экземпляры есть только у обычных книг");
         List<BookCopy> created = new ArrayList<>();
@@ -68,7 +69,7 @@ public class BookCopyService {
             throw new BadRequestException("Статус «" + newStatus.getName() + "» устанавливается только через заявку");
         }
         if (copy.getStatus() == BookCopyStatus.RESERVED || copy.getStatus() == BookCopyStatus.ISSUED) {
-            throw new BadRequestException("Экземпляр " + copy.getInventoryNumber() + " сейчас в выдаче");
+            throw new ConflictException("Экземпляр " + copy.getInventoryNumber() + " сейчас в выдаче");
         }
         copy.setStatus(newStatus);
         BookCopy saved = repository.save(copy);
@@ -94,8 +95,11 @@ public class BookCopyService {
             if (!copy.getBook().getId().equals(book.getId())) {
                 throw new BadRequestException("Экземпляр " + copy.getInventoryNumber() + " относится к другой книге");
             }
+            if (copy.getStatus() == BookCopyStatus.ISSUED) {
+                throw new ConflictException("Экземпляр " + copy.getInventoryNumber() + " уже выдан");
+            }
             if (copy.getStatus() != BookCopyStatus.AVAILABLE) {
-                throw new BadRequestException("Экземпляр " + copy.getInventoryNumber() + " недоступен: " + copy.getStatus().getName());
+                throw new ConflictException("Экземпляр " + copy.getInventoryNumber() + " недоступен: " + copy.getStatus().getName());
             }
             return copy;
         }

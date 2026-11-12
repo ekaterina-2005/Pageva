@@ -67,7 +67,7 @@ export class StatsBooksCategoriesQuantityComponent implements OnInit {
 				labels: {
 					offsetY: 0,
 					style: {
-						colors: '#000000',   // чёрный текст
+						colors: '#000000',   // черный текст
 						fontSize: '12px'
 					}
 				}
@@ -78,7 +78,7 @@ export class StatsBooksCategoriesQuantityComponent implements OnInit {
 					maxWidth: 80,
 					offsetX: -5,          // сдвиг подписей влево
 					style: {
-						colors: '#000000', // чёрный текст
+						colors: '#000000', // черный текст
 						fontSize: '12px'
 					}
 				}

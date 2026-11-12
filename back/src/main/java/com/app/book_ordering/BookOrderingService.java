@@ -12,6 +12,7 @@ import com.app.enums.BookOrderingStatus;
 import com.app.enums.BookType;
 import com.app.fine.FineService;
 import com.app.system.exception.BadRequestException;
+import com.app.system.exception.ConflictException;
 import com.app.system.exception.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -110,6 +111,25 @@ public class BookOrderingService {
         return saved;
     }
 
+    // Библиотекарь сразу выдает выбранный экземпляр выбранному читателю (заявка создается в статусе DONE)
+    @Transactional
+    public BookOrdering issue(String readerId, String copyId, int days) {
+        if (days < 1 || days > 100) throw new BadRequestException("Срок выдачи должен быть от 1 до 100 дней");
+        AppUser reader = userService.findReader(readerId);                    // 404 «Читатель не найден»
+        if (fineService.hasUnpaid(reader)) {
+            throw new ConflictException("У читателя неоплаченный штраф за просроченный возврат");
+        }
+        BookCopy copy = bookCopyService.find(copyId);                         // 404 «Не найден экземпляр»
+        bookCopyService.findAvailable(copy.getBook(), copyId);               // 409 «Экземпляр уже выдан»
+
+        BookOrdering ordering = new BookOrdering(getDateNow(), days);
+        ordering.setOwner(reader);
+        ordering.setBook(copy.getBook());
+        ordering.setBookCopy(bookCopyService.setStatus(copy, BookCopyStatus.ISSUED));
+        ordering.setStatus(BookOrderingStatus.DONE);
+        return repository.save(ordering);
+    }
+
     public BookOrdering save(BookOrdering save, String bookId, String discountId) {
         AppUser user = userService.getCurrentUser();
         if (fineService.hasUnpaid(user)) {
@@ -138,7 +158,7 @@ public class BookOrderingService {
 
     private void checkStatus(BookOrdering ordering, BookOrderingStatus... allowed) {
         for (BookOrderingStatus status : allowed) if (ordering.getStatus() == status) return;
-        throw new BadRequestException("Действие недоступно для заявки в статусе «" + ordering.getStatus().getName() + "»");
+        throw new ConflictException("Действие недоступно для заявки в статусе «" + ordering.getStatus().getName() + "»");
     }
 
 }

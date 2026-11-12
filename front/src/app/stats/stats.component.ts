@@ -57,10 +57,10 @@ export class StatsComponent implements OnInit {
 	colors: any[] = [
 		"#D9230F", // красный
 		"#D94F1F", // оранжево-красный
-		"#E89A35", // жёлто-оранжевый
-		"#FFD700", // жёлтый
+		"#E89A35", // желто-оранжевый
+		"#FFD700", // желтый
 		"#8CD93F", // лаймовый
-		"#00C853", // ярко-зелёный
+		"#00C853", // ярко-зеленый
 		"#00B8A9", // бирюзовый
 		"#0286B4", // фирменный голубой
 		"#2962FF", // ярко-синий
@@ -190,7 +190,7 @@ export class StatsComponent implements OnInit {
 			return;
 		}
 
-		// Создаём PDF
+		// Создаем PDF
 		const img = canvas.toDataURL('image/png');
 		const pdf = new jsPDF('p', 'mm', 'a4');
 

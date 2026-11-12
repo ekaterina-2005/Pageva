@@ -2,6 +2,7 @@ package com.app.system.exception;
 
 import com.app.system.Result;
 import com.app.system.StatusCode;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AccountStatusException;
@@ -50,6 +51,27 @@ public class ExceptionHandlerAdvice {
                 false,
                 StatusCode.INVALID_ARGUMENT,
                 e.getMessage()
+        );
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    Result handleConflictException(ConflictException e) {
+        return new Result(
+                false,
+                StatusCode.CONFLICT,
+                e.getMessage()
+        );
+    }
+
+    // срабатывает частичный уникальный индекс ux_book_ordering_active_copy из V6
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    Result handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        return new Result(
+                false,
+                StatusCode.CONFLICT,
+                "Экземпляр уже участвует в активной выдаче"
         );
     }
 

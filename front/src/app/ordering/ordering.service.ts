@@ -37,8 +37,9 @@ export class OrderingService {
 	}
 
 	booked(id: number, copyId: number = 0) {
-		this.http.get(
+		this.http.patch(
 			this.url + `/${id}/booked`,
+			"",
 			{
 				headers: this.global.headersToken,
 				params: new HttpParams().appendAll({
@@ -52,8 +53,9 @@ export class OrderingService {
 	}
 
 	rejected(id: number) {
-		this.http.get(
+		this.http.patch(
 			this.url + `/${id}/rejected`,
+			"",
 			{headers: this.global.headersToken}
 		).subscribe({
 			next: (res: any) => {
@@ -69,8 +71,9 @@ export class OrderingService {
 	}
 
 	done(id: number) {
-		this.http.get(
+		this.http.patch(
 			this.url + `/${id}/done`,
+			"",
 			{headers: this.global.headersToken}
 		).subscribe({
 			next: (res: any) => {
@@ -86,8 +89,9 @@ export class OrderingService {
 	}
 
 	returned(id: number) {
-		this.http.get(
+		this.http.patch(
 			this.url + `/${id}/returned`,
+			"",
 			{headers: this.global.headersToken}
 		).subscribe({
 			next: (res: any) => {

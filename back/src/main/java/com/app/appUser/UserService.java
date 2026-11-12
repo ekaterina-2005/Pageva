@@ -56,6 +56,23 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    // Читатель для выдачи — существующий пользователь с ролью USER, иначе 404 «Читатель не найден»
+    public AppUser findReader(String id) {
+        AppUser reader;
+        try {
+            reader = repository.findById(Long.parseLong(id)).orElseThrow();
+        } catch (Exception e) {
+            throw new ObjectNotFoundException("Читатель не найден: " + id);
+        }
+        if (reader.getRole() != Role.USER) throw new ObjectNotFoundException("Читатель не найден: " + id);
+        return reader;
+    }
+
+    // Поиск читателей по части ФИО (для библиотекаря, чтобы узнать readerId)
+    public List<AppUser> findReaders(String query) {
+        return repository.findAllByRoleAndFioContainingIgnoreCaseOrderById(Role.USER, query == null ? "" : query.trim());
+    }
+
     public AppUser save(AppUser user) {
         if (repository.findByUsername(user.getUsername()).isPresent()) {
             throw new BadRequestException("Пользователь с таким логином уже существует");
